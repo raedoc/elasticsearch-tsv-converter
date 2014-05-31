@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROGRAM=./a.out
+PROGRAM=./convert
 
 function assert_equal() {
   if [[ "$1" != "$2" ]]
