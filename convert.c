@@ -1,11 +1,11 @@
 #include <stdio.h>
 
 void printIndex(char *indexName, char *typeName, int id, int parentId){
-  fprintf(stdout, "{\"index\": {\"_index\": \"%s\", \"_type\": \"%s\", \"_id\": \"%d\", \"_parent\": \"%d\"}}\n", indexName, typeName, id, parentId);
+  fprintf(stdout, "{index:{_index:\"%s\",_type:\"%s\",_id:%d,_parent:%d}}\n", indexName, typeName, id, parentId);
 }
 
 void printData(int userId, int collectionId){
-  fprintf(stdout, "{\"user_id\": \"%d\", \"collection_id\": \"%d\"}\n", userId, collectionId);
+  fprintf(stdout, "{user_id:%d,collection_id:%d}\n", userId, collectionId);
 }
 
 void handleLine(ssize_t linelen, char *line){

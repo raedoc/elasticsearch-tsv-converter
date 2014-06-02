@@ -14,10 +14,10 @@ function assert_equal() {
 function test() {
   local actual=`cat test.tsv | $PROGRAM`
   read -r -d '' expected <<EOF
-{"index": {"_index": "wat", "_type": "taco", "_id": "1", "_parent": "2"}}
-{"user_id": "3", "collection_id": "4"}
-{"index": {"_index": "wat", "_type": "taco", "_id": "3", "_parent": "4"}}
-{"user_id": "5", "collection_id": "6"}
+{index:{_index:"wat",_type:"taco",_id:1,_parent:2}}
+{user_id:3,collection_id:4}
+{index:{_index:"wat",_type:"taco",_id:3,_parent:4}}
+{user_id:5,collection_id:6}
 EOF
   assert_equal "$actual" "$expected"
 }

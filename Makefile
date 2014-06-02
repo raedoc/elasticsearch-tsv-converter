@@ -3,3 +3,6 @@ all:
 
 test: all
 	./test.sh
+
+benchmark: all
+	./benchmark.sh 10000
