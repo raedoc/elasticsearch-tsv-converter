@@ -1,9 +1,10 @@
 #!/bin/bash
 
+GENERATOR=./generate
 SAMPLE_PATH=`cd $(dirname $0) && pwd`/benchmark
 SAMPLE_SIZE=$1
 HOST=localhost:9200
-INDEX=wat
+INDEX=wat-$RANDOM
 TYPE=taco
 PARENT=beans
 
@@ -20,6 +21,10 @@ function reset() {
       $TYPE: {
         _parent: {
           type: \"$PARENT\"
+        },
+        _timestamp: {
+          enabled: true,
+          path: \"created_at\"
         }
       }
     }
@@ -31,25 +36,11 @@ function reset() {
   }'
 }
 
-function generateLine() {
-  echo $RANDOM $RANDOM $RANDOM $RANDOM
-}
-
-function generateData() {
-  for o in {1..100}
-  do
-    for i in {1..100000}
-    do
-      generateLine
-    done
-    echo -n '.' 1>&2
-  done
-  echo 1>&2
-}
-
 function makeSample() {
+  local TOTAL_SIZE=$(($SAMPLE_SIZE * 10))
   mkdir -p $SAMPLE_PATH
-  generateData > $SAMPLE_PATH/sample.tsv
+  echo "Generating $TOTAL_SIZE entries"
+  $GENERATOR $TOTAL_SIZE > $SAMPLE_PATH/sample.tsv
 }
 
 function splitSample() {
@@ -61,8 +52,15 @@ function splitSample() {
 function convertAndUpload() {
   for file in $SAMPLE_PATH/sample/part-*
   do
-    cat $file | ./convert | time curl -o /dev/null -s -XPOST $HOST/_bulk --data-binary @-
+    cat $file | ./convert $INDEX $TYPE | time curl -o /dev/null -s -XPOST $HOST/_bulk --data-binary @-
   done
+  curl -s -o /dev/null -XPUT $HOST/$INDEX/_settings -d'{
+    "index" : {
+      "refresh_interval" : "1s"
+    }
+  }'
+  curl -o /dev/null -s -XPOST $HOST/$INDEX/_refresh
+  echo "       ----------         ---------         --------"
 }
 
 reset
