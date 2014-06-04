@@ -1,7 +1,26 @@
 #include <stdio.h>
 
-void printIndex(char *indexName, char *typeName, unsigned long id, unsigned long parentId){
-  fprintf(stdout, "{\"index\":{\"_index\":\"%s\",\"_type\":\"%s\",\"_id\":\"%lu\",\"_parent\":\"%lu\"}}\n", indexName, typeName, id, parentId);
+const char *BASE_62_LOOKUP = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+void printBase62(unsigned long number, FILE *stream) {
+  do {
+    fputc(BASE_62_LOOKUP[number % 62], stream);
+    number = number / 62;
+  } while (number > 0);
+}
+
+void printCompositeId(FILE *stream, unsigned long parentId, unsigned long userId, unsigned long collectionId) {
+  printBase62(parentId, stream);
+  fputc('-', stream);
+  printBase62(userId, stream);
+  fputc('-', stream);
+  printBase62(collectionId, stream);
+}
+
+void printIndex(char *indexName, char *typeName, unsigned long parentId, unsigned long userId, unsigned long collectionId){
+  fprintf(stdout, "{\"index\":{\"_index\":\"%s\",\"_type\":\"%s\",\"_id\":\"", indexName, typeName);
+  printCompositeId(stdout, parentId, userId, collectionId);
+  fprintf(stdout, "\",\"_parent\":\"%lu\"}}\n", parentId);
 }
 
 void printData(unsigned long userId, unsigned long collectionId, unsigned long timeStamp, unsigned long timeStampMilliseconds){
@@ -9,9 +28,9 @@ void printData(unsigned long userId, unsigned long collectionId, unsigned long t
 }
 
 void handleLine(char *indexName, char *typeName, char *line){
-  unsigned long id, parentId, userId, collectionId, timeStamp, timeStampMilliseconds;
-  if (sscanf(line, "%lu %lu %lu %lu %lu.%lu", &id, &parentId, &userId, &collectionId, &timeStamp, &timeStampMilliseconds) == 6){
-    printIndex(indexName, typeName, id, parentId);
+  unsigned long parentId, userId, collectionId, timeStamp, timeStampMilliseconds;
+  if (sscanf(line, "%lu %lu %lu %lu.%lu", &parentId, &userId, &collectionId, &timeStamp, &timeStampMilliseconds) == 5){
+    printIndex(indexName, typeName, parentId, userId, collectionId);
     printData(userId, collectionId, timeStamp, timeStampMilliseconds);
   }
 }

@@ -6,7 +6,7 @@
 void generateLine() {
   time_t now;
   time(&now);
-  fprintf(stdout, "%d\t%d\t%d\t%d\t%lu.%d\n", rand(), rand(), rand(), rand(), (unsigned long)now, rand() % 1000);
+  fprintf(stdout, "%d\t%d\t%d\t%lu.%d\n", rand(), rand(), rand(), (unsigned long)now, rand() % 1000);
 }
 
 int main(int argc, char **argv) {
