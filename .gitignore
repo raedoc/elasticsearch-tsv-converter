@@ -22,4 +22,5 @@
 *.x86_64
 *.hex
 convert
+generate
 benchmark/
