@@ -38,8 +38,7 @@ void handleLine(char *indexName, char *typeName, char *line){
 void getInput(char *indexName, char *typeName){
   char *line = NULL; // unallocated pointer
   size_t linecap = 0;
-  ssize_t linelen;
-  while ((linelen = getline(&line, &linecap, stdin)) > 0){
+  while (getline(&line, &linecap, stdin) > 0){
     handleLine(indexName, typeName, line);
   }
 }
